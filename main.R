@@ -89,8 +89,8 @@ dataset <- dataset %>%
   )
 dataset$Cholesterol.Levels<-NULL
 
-set.seed(1010)
-dataset1 <- dataset[sample(nrow(dataset), 150), ]
+set.seed(100)
+dataset1 <- dataset[sample(nrow(dataset), 5000), ]
 summary(dataset1$Diagnosis)
 
 #Postavljanje izlazne varijable na kraj
@@ -101,7 +101,7 @@ dataset <- dataset[ , c(1:16, 18:21, 17)]
 library(ggplot2)
 library(dplyr)
 
-# Scatter plot za numeričke varijable u odnosu na Diagnosis
+#Density plots (geom_density) za numeričke varijable
 numeric_vars <- c("Age", "Average.Glucose.Level", "Body.Mass.Index..BMI.", 
                   "Stress.Levels", "Systolic.pressure", "Diastolic.pressure", 
                   "HDL", "LDL")
@@ -109,65 +109,35 @@ numeric_vars <- c("Age", "Average.Glucose.Level", "Body.Mass.Index..BMI.",
 
 for (var in numeric_vars) {
   print(
-    ggplot(dataset1, aes_string(x = var, y = "Diagnosis", color = "Diagnosis")) +
-      geom_point() +
-      labs(title = paste("Scatter plot", var, "vs Diagnosis"),
+    ggplot(dataset, aes_string(x = var, fill = "Diagnosis", color = "Diagnosis")) +
+      geom_density(alpha = 0.65) +
+      labs(title = paste("Density plot for", var, "vs Diagnosis"),
            x = var,
-           y = "Diagnosis",
+           y = "Density",
+           fill = "Diagnosis",
            color = "Diagnosis")
   )
 }
-# Box plot za numeričke varijable u odnosu na Diagnosis
-for (var in numeric_vars) {
-  print(
-    ggplot(dataset1, aes_string(x = "Diagnosis", y = var, fill = "Diagnosis")) +
-      geom_boxplot() +
-      labs(title = paste("Box plot", var, "u odnosu na Diagnosis"),
-           x = "Diagnosis",
-           y = var,
-           fill = "Diagnosis")
-  )
-}
-# Violin plot za numeričke varijable u odnosu na Diagnosis
-for (var in numeric_vars) {
-  print(
-    ggplot(dataset, aes_string(x = "Diagnosis", y = var, fill = "Diagnosis")) +
-      geom_violin() +
-      labs(title = paste("Violin plot", var, "u odnosu na Diagnosis"),
-           x = "Diagnosis",
-           y = var,
-           fill = "Diagnosis")
-  )
-}
 
-# Bar plot za kategorijske varijable u odnosu na Diagnosis
-categorical_vars <- c("Gender", "Hypertension", "Heart.Disease", "Marital.Status",
-                      "Work.Type", "Residence.Type", "Smoking.Status", 
+#Za kategoričke varijable, bar graf 
+categorical_vars <- c("Gender", "Hypertension", "Marital.Status",
+                      "Work.Type", "Smoking.Status", 
                       "Alcohol.Intake", "Physical.Activity", "Stroke.History", 
                       "Family.History.of.Stroke", "Dietary.Habits")
 
 for (var in categorical_vars) {
   print(
-    ggplot(dataset1, aes_string(x = var, fill = "Diagnosis")) +
-      geom_bar(position = "dodge") +
-      labs(title = paste("Bar plot", var, "u odnosu na Diagnosis"),
+    ggplot(dataset, aes_string(x = var, fill = "Diagnosis")) +
+      geom_bar(position = "fill", width = 0.6) +
+      labs(title = paste("Bar plot for", var, "vs Diagnosis"),
            x = var,
-           y = "Count",
-           fill = "Diagnosis")
+           y = "Proportion",
+           fill = "Diagnosis")+
+      theme_minimal()
   )
 }
-# Scatter plot za Systolic.pressure i Diastolic.pressure sa facet wrap za Diagnosis
-ggplot(dataset1, aes(x = Systolic.pressure, y = Diastolic.pressure, color = Diagnosis)) +
-  geom_point() +
-  facet_wrap(~ Diagnosis) +
-  labs(title = "Scatter plot Systolic vs Diastolic Pressure sa facet wrap za Diagnosis",
-       x = "Systolic Pressure",
-       y = "Diastolic Pressure",
-       color = "Diagnosis")
 
-str(dataset)
-
-
+ str(dataset)
 
 
 
